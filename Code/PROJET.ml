@@ -13,8 +13,8 @@ open Random;;
 
 (**------------ Exercice 1 : Arbre Binaire de Recherche -------------**)
 
-  (*=/1/============================================== *)
-  
+(*=/1/============================================== *)
+
 let bst_rnd_create(sizeBorn : int): 'a bst =
   Random.self_init();
   let l : int list ref = ref [] and
@@ -48,6 +48,9 @@ compute_imbalance();;
 
 
 (* ================================================================== *)
+=======
+
+
 
 
 
