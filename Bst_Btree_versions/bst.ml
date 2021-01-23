@@ -1,19 +1,16 @@
 open Btree;;
 open List;;
 
-module type Bst =
-  sig
-    type 'a bst = 'a t_btree;;
-
-    val bst_seek : 'a bst * 'a -> 'a bst
-    val bst_linsert : 'a bst * 'a -> 'a bst
-    val bst_lbuild : 'a list -> 'a bst
-  end 
-;;
-
 module Bst : Bst =
   struct
     type 'a bst = 'a t_btree;;
+    
+    let max2(x, y): int =
+      if x>y
+      then x
+      else y
+    ;;
+    
     let rec bst_seek(b, v : 'a bst * 'a): 'a bst =
       if isEmpty(b)
       then b
@@ -44,6 +41,16 @@ module Bst : Bst =
       then empty()
       else bst_linsert(bst_lbuild(tl(l)), hd(l))
     ;;
-    
+
+    let rec height(bt : 'a bst): int =
+      if(isEmpty(bt))
+      then 0
+      else
+        let (ls, rs) = (lson(bt), rson(bt)) in
+        if(isEmpty(ls) && isEmpty(rs))
+        then 0
+        else
+          1 + max2(height(ls), height(rs))
+    ;;
   end
 ;;
