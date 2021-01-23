@@ -1,7 +1,3 @@
-(*#directory"G:/Cours_Univ/L3_Informatique/Semestre_5/Algo_Prog/Ressources/bytecodes/4.02.1+ocp1";; (* à lancer sur Windows *)*)
-#directory"/Volumes/Disque_Sam/Cours_Univ/L3_Informatique/Semestre_5/Algo_Prog/Ressources/bytecodes/4.10.0";;
-
-#load "btree.cmo";;
 open Btree;;
 open List;;
 
