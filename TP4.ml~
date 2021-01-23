@@ -4,8 +4,6 @@
 #load "btree.cmo";;
 open Btree;;
 
-#use "bst.ml";;
-
 (** EXERCICE 1 **)
 
 let test_bst : int bst = rooting(4,

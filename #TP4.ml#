@@ -4,7 +4,9 @@
 #load "btree.cmo";;
 open Btree;;
 
+#load "bst.ml";;
 #use "bst.ml";;
+open Bst;;
 
 (** EXERCICE 1 **)
 
