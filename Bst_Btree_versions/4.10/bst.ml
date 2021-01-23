@@ -1,7 +1,19 @@
 open Btree;;
 open List;;
 
-module  Bst =
+module type Bst =
+  sig
+    type 'a bst = 'a t_btree;;
+
+    val max2 : int * int -> int
+    val bst_seek : 'a bst * 'a -> 'a bst
+    val bst_linsert : 'a bst * 'a -> 'a bst
+    val bst_lbuild : 'a list -> 'a bst
+    val height : 'a bst -> int
+  end 
+;;
+
+module Bst : Bst =
   struct
     type 'a bst = 'a t_btree;;
     let max2(x, y): int =
