@@ -3,7 +3,7 @@
 
 #load "btree.cmo";;
 open Btree;;
-open List;;;
+open List;;
 
 module type Bst =
   sig

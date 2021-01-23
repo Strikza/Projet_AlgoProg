@@ -3,8 +3,10 @@
 
 #load "btree.cmo";;
 open Btree;;
+#show Btree;;
 
 #use "bst.ml";;
+open Bst;;
 
 (** EXERCICE 1 **)
 
@@ -19,7 +21,7 @@ let test_bst : int bst = rooting(4,
 
 show_int_btree(test_bst);;
 #trace bst_seek;;
-root(bst_seek(test_bst, 8));;
+root(bst_seek(test_bst, 7));;
 
 let test_bstBis = bst_linsert(test_bst, 8);;
 show_int_btree(test_bstBis);;
