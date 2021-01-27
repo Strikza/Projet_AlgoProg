@@ -15,9 +15,9 @@ open Random;;
 
 (*=/1/============================================== *)
 
-let bst_rnd_create(sizeBorn : int): 'a bst =
+let bst_rnd_create sizeBorn =
   Random.self_init();
-  let l : int list ref = ref [] and
+  let l  = ref [] and
       size = Random.int(sizeBorn) in
   for i=0 to size do
     l := Random.int(100)::(!l);
@@ -29,10 +29,10 @@ let test = bst_rnd_create(20);;
 show_int_btree(test);;
 
 
-(* ================================================================== *)
+(*=/2/============================================== *)
 
-let compute_imbalance(): float =
-  let sum : float ref = ref 0.0 and
+let compute_imbalance() =
+  let sum = ref 0.0 and
       n = 10000 in
   for i=0 to n do
     let t = bst_rnd_create(20) in
@@ -42,13 +42,13 @@ let compute_imbalance(): float =
 ;;
 
 compute_imbalance();;
-(*  On remarque ici que lorsqu'on lance plusieurs fois la fonction, le
-(* résultat est presque systémtiquement le même, environ 0.
+(*  On remarque ici que lorsqu'on lance plusieurs fois la fonction, le *)
+(* résultat est presque systémtiquement le même, environ 0.            *)
 
 
 
-(* ================================================================== *)
-=======
+(*=/3/============================================== *)
+
 
 
 
