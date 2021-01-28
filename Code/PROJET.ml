@@ -33,12 +33,27 @@ show_int_btree(test);;
 
 (*=/2/============================================================================== *)
 
+let desequilibre(tree : 'a bst): int =
+  let (ls, rs) = (lson(tree), rson(tree)) in
+  if (isEmpty(ls) && isEmpty(rs))
+  then 0
+  else
+    if isEmpty(ls)
+    then height(ls) - (height(rs)+1)
+    else
+      if isEmpty(rs)
+      then (height(ls)+1) - height(rs)
+      else (height(ls)+1) - (height(rs)+1)
+;;
+
+desequilibre(test);;
+
 let compute_imbalance() =
   let sum = ref 0.0 and
       n = 10000 in
   for i=0 to n do
     let t = bst_rnd_create(20) in
-    sum := !sum +. float_of_int(height(lson(t)) - height(rson(t)));
+    sum := !sum +. float_of_int(desequilibre(t));
    done;
   !sum/.float_of_int(n)
 ;;
@@ -113,7 +128,7 @@ compute_imbalance();;
 (* *) for i=0 to n do
 (* *)    let l = fixedSuite(n, order, n) in
 (* *)    let t = bst_lbuild(l) in 
-(* *)    sum := !sum +. float_of_int(height(lson(t)) - height(rson(t)));
+(* *)    sum := !sum +. float_of_int(desequilibre(t));
 (* *)   done;
 (* *)  !sum/.float_of_int(n)
 (* *);;
@@ -125,7 +140,7 @@ compute_imbalance();;
 (* *) for i=0 to n do
 (* *)    let l = randSuite(n, order) in
 (* *)    let t = bst_lbuild(l) in 
-(* *)    sum := !sum +. float_of_int(height(lson(t)) - height(rson(t)));
+(* *)    sum := !sum +. float_of_int(desequilibre(t));
 (* *)   done;
 (* *)  !sum/.float_of_int(n)
 (* *);;
@@ -151,3 +166,4 @@ compute_imbalanceSuite();;
 
 
 (**----------------------------------- Exercice 2 : Arbres AVL -------------------------------------**)
+
