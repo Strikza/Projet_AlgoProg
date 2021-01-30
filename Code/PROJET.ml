@@ -167,3 +167,76 @@ compute_imbalanceSuite();;
 
 (**----------------------------------- Exercice 2 : Arbres AVL -------------------------------------**)
 
+
+module type Avltree_type =
+  sig
+    type +'a t_avltree
+
+    val rg : 'a t_avltree -> 'a t_avltree
+    val rd : 'a t_avltree -> 'a t_avltree
+    val rgd : 'a t_avltree -> 'a t_avltree
+    val rdg : 'a t_avltree -> 'a t_avltree
+    
+  end
+;;
+
+module Avltree : Avltree_type =
+  struct
+    type 'a t_avltree = Bst
+
+    let rg (tree: 'a t_avltree) : 'a t_avltree =
+      match tree with
+      | B_node(v1,l,B_node(v2,ls,rs)) -> rooting(v2,rooting(v1,l,ls),rs)
+      | _ -> failwith"Function: rg (rotation gauche)"
+    let rd (tree: 'a t_avltree) : 'a t_avltree =
+      match tree with
+      | B_node(v1,B_node(v2,ls,rs),r) -> rooting(v2,ls,rooting(v1,rs,r))
+      | _ -> failwith"Function: rd (rotation droite)"
+    let rgd (tree: 'a t_avltree) : 'a t_avltree =
+      match tree with
+      | B_node(v,B_node(v1,ls1,B_node(v2,ls2,rs2)),r) -> rooting(v2,rooting(v1,ls1,ls2),rooting(v,rs2,r))
+      | _ -> failwith"Function: rgd (rotation gauche-droite)"
+    let rdg (tree: 'a t_avltree) : 'a t_avltree =
+      match tree with
+      | B_node(v,l,B_node(v1,B_node(v2,ls2,rs2),rs1)) -> rooting(v2,rooting(v,l,ls2),rooting(v1,rs2,rs1))
+      | _ -> failwith"Function: rdg (rotation droite-gauche)"
+  end
+;;
+
+(** A modifier et rajouter 
+
+val insert_avl 'a * 'a t_avltree -> 'a t_avltree
+val equiliber_avl 'a t_avltree -> 'a t_avltree
+
+let insert_avl(e, tree: 'a * 'a t_avltree) : 'a t_avltree =
+  match tree with
+  | B_empty -> rooting(e,empty(),empty())
+  | B_node(v,ls,rs) -> let final_tree =
+                         if (e<c)
+                         then rooting(c,insert_avl(e,ls),rs)
+                         else rooting(c,ls,insert_avl(e,rs)) in
+                       equiliber_avl(final_tree)
+
+let equiliber_avl(tree: 'a t_avltree) : 'a t_avltree =
+  match tree with
+  | B_empty -> B_empty
+  | B_node(x,ls,rs) ->
+     begin
+       match (height ls)-(height rs) with
+       | 2 ->
+          begin
+            match ls with
+            | B_node(y,ls2,rs2) when height(ls2)<height(rs2) -> rd(rooting(x,rg(ls),rs))
+            | _ -> rd tree
+          end
+       | -2 ->
+          begin
+            match rs with
+            | B_node(y,ls2,rs2) when height(ls2)>height(rs2) -> rg(rooting(x,ls,rd(rs)))
+            | _ -> rg tree
+          end
+       | _ -> tree
+     end
+       **)         
+                         
+
