@@ -166,112 +166,39 @@ compute_imbalanceSuite();;
 
 
 (**----------------------------------- Exercice 2 : Arbres AVL -------------------------------------**)
-(* Le module AVL (à compléter une fois les fonctions finies) *)
+
 module Avl =
   struct
     type 'a avl = 'a bst;;
-
-    let show_avl_int(tree : 'a avl) : unit = show((fun (h, root) -> (string_of_int h) ^ "||" ^ (string_of_int root)), tree);;
-
-    let rg (tree : 'a avl): 'a avl =
-      if isEmpty(tree) && isEmpty(rson(tree))
-      then failwith"Function: rg (rotation gauche)"
-      else
-        let ((h, r), ls, rs) = (root(tree), lson(tree), rson(tree)) in
-        let ((hR, rR), lsR, rsR) = (root(rs), lson(rs), rson(rs)) in
-        let (nh, nhR) =
-          if hR = 0
-          then (0, 1)
-          else (0, 0)
-        in
-        rooting((nhR, rR), rooting((nh, r), ls, lsR), rsR)
-    ;;
-
-    let rd (tree: 'a avl) : 'a avl =
-      if isEmpty(tree) && isEmpty(lson(tree))
-      then failwith"Function: rd (rotation droite)"
-      else
-        let ((h, r), ls, rs) = (root(tree), lson(tree), rson(tree)) in
-        let ((hL, rL), lsL, rsL) = (root(ls), lson(ls), rson(ls)) in
-        let (nh, nhL) =
-          if hL = 0
-          then (0, -1)
-          else (0, 0)
-        in
-        rooting((nhL, rL), lsL, rooting((nh, r), rsL, rs))
-    ;;
-
-    let rgd (tree: 'a avl) : 'a avl =
-      if isEmpty(tree) && isEmpty(lson(tree)) && isEmpty(lson(rson(tree)))
-      then failwith"Function: rgd (rotation gauche-droite)"
-      else
-        let ((h, r), ls, rs) = (root(tree), lson(tree), rson(tree)) in
-        rd(rooting((h, r), rg(ls), rs))
-    ;;
-
-    let rdg (tree: 'a avl) : 'a avl =
-      if isEmpty(tree) && isEmpty(rson(tree)) && isEmpty(rson(lson(tree)))
-      then failwith"Function: rgd (rotation droite-gauche)"
-      else
-        let ((h, r), ls, rs) = (root(tree), lson(tree), rson(tree)) in
-        rg(rooting((h, r), ls, rd(rs)))
-    ;;
-    
   end
 ;;
-(* --------------------------------------------------------- *)
 
-open Avl;;
-#show Avl;;
+(**
+    let rg (tree: 'a t_avltree) : 'a t_avltree =
+      match tree with
+      | B_node(v1,l,B_node(v2,ls,rs)) -> rooting(v2,rooting(v1,l,ls),rs)
+      | _ -> failwith"Function: rg (rotation gauche)"
+    ;;
+    
+    let rd (tree: 'a t_avltree) : 'a t_avltree =
+      match tree with
+      | B_node(v1,B_node(v2,ls,rs),r) -> rooting(v2,ls,rooting(v1,rs,r))
+      | _ -> failwith"Function: rd (rotation droite)"
+    ;;
+    
+    let rgd (tree: 'a t_avltree) : 'a t_avltree =
+      match tree with
+      | B_node(v,B_node(v1,ls1,B_node(v2,ls2,rs2)),r) -> rooting(v2,rooting(v1,ls1,ls2),rooting(v,rs2,r))
+      | _ -> failwith"Function: rgd (rotation gauche-droite)"
+    ;;
+    
+    let rdg (tree: 'a t_avltree) : 'a t_avltree =
+      match tree with
+      | B_node(v,l,B_node(v1,B_node(v2,ls2,rs2),rs1)) -> rooting(v2,rooting(v,l,ls2),rooting(v1,rs2,rs1))
+      | _ -> failwith"Function: rdg (rotation droite-gauche)"
+    ;;
 
-(* Zone de test *)
-
-let tAvlGD = rooting((-1, 1),
-                  rooting((0, 2), empty(), empty()),
-                  rooting((0, 3),
-                          rooting((0, 4), empty(), empty()),
-                          rooting((0, 5), empty(), empty())))
-;;
-show_avl_int(tAvlGD);;
-
-
-let tAvlRG = rg(tAvlGD);;
-show_avl_int(tAvlRG);;
-
-let tAvlRD = rd(tAvlRG);;
-show_avl_int(tAvlRD);;
-
-
-
-let tAvlRGD = rooting((2, 1),
-                      rooting((-1, 2),
-                              rooting((0, 4), empty(), empty()),
-                              rooting((0, 5),
-                                      rooting((0, 6), empty(), empty()),
-                                      rooting((0, 7), empty(), empty()))
-                        ),
-                      rooting((0, 3), empty(), empty()))
-;;
-show_avl_int(tAvlRGD);;
-
-let tAvlRGDBis = rgd(tAvlRGD);;
-show_avl_int(tAvlRGDBis);;
-
-
-let tAvlRDG = rooting((-2, 1),
-                      rooting((0, 2), empty(), empty()),
-                      rooting((1, 3),
-                              rooting((0, 4),
-                                      rooting((0, 6), empty(), empty()),
-                                      rooting((0, 7), empty(), empty())),
-                              rooting((0, 5), empty(), empty())))
-;;
-show_avl_int(tAvlRDG);;
-
-let tAvlRDGBis = rdg(tAvlRDG);;
-show_avl_int(tAvlRDGBis);;
-
-
+  end
 ;;
 
 (** A modifier et rajouter 
@@ -308,4 +235,6 @@ let equiliber_avl(tree: 'a t_avltree) : 'a t_avltree =
           end
        | _ -> tree
      end
-       **)
+       **)         
+                         
+ **)
