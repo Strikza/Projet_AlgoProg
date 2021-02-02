@@ -1,5 +1,6 @@
 #load "btree.cmo";;
 open Btree;;
+
 #show Btree;;
 
 #load "bst.cmo";;
@@ -169,9 +170,10 @@ compute_imbalanceSuite();;
 (* Le module AVL (à compléter une fois les fonctions finies) *)
 module Avl =
   struct
-    type 'a avl = 'a bst;;
+    type 'a avl = (int*'a) bst;;
 
-    let show_avl_int(tree : 'a avl) : unit = show((fun (h, root) -> (string_of_int h) ^ "||" ^ (string_of_int root)), tree);;
+    let show_avl_int(tree : 'a avl) : unit = show((fun (h, root) -> (string_of_int h) ^ "||" ^ (string_of_int root)), tree)
+    ;;
 
     let rg (tree : 'a avl): 'a avl =
       if isEmpty(tree) && isEmpty(rson(tree))
@@ -217,6 +219,46 @@ module Avl =
         rg(rooting((h, r), ls, rd(rs)))
     ;;
     
+     let rebalance_avl(tree: 'a avl) : 'a avl =
+      if isEmpty(tree)
+      then empty()
+      else
+        let ((i, r), ls, rs) = (root(tree), lson(tree), rson(tree)) in
+        begin
+          match i with
+          | 2 ->
+             let ((i_L, r_L), ls_L, rs_L) = (root(ls), lson(ls), rson(ls)) in
+             begin
+               match i_L with
+               | -1 -> rgd(tree)
+               | 1 -> rd(tree)
+               | _ -> failwith"DEBUG : rebalance_avl function"
+             end
+          | -2 ->
+             let ((i_R, r_R), ls_R, rs_R) = (root(rs), lson(rs), rson(rs)) in
+             begin
+               match i_R with
+               | 1 -> rdg(tree)
+               | -1 -> rg(tree)
+               | _ -> failwith"DEBUG : rebalance_avl function"
+             end
+          | _ -> tree
+        end
+    ;;
+
+    let rec insert_avl(e, tree: 'a * 'a avl) : 'a avl =
+      if isEmpty(tree)
+      then rooting((0,e), empty(), empty())
+      else
+        let ((i, r), ls, rs) = (root(tree), lson(tree), rson(tree)) in
+        let final_tree =
+          if e<r
+          then rooting((i+1,r), insert_avl(e,ls), rs)
+          else rooting((i-1,r), ls, insert_avl(e,rs))
+        in
+        rebalance_avl(final_tree) 
+    ;;
+    
   end
 ;;
 (* --------------------------------------------------------- *)
@@ -226,10 +268,10 @@ open Avl;;
 
 (* Zone de test *)
 
-let tAvlGD = rooting((-1, 1),
-                  rooting((0, 2), empty(), empty()),
-                  rooting((0, 3),
-                          rooting((0, 4), empty(), empty()),
+let tAvlGD = rooting((-1, 2),
+                  rooting((0, 1), empty(), empty()),
+                  rooting((0, 4),
+                          rooting((0, 3), empty(), empty()),
                           rooting((0, 5), empty(), empty())))
 ;;
 show_avl_int(tAvlGD);;
@@ -241,30 +283,36 @@ show_avl_int(tAvlRG);;
 let tAvlRD = rd(tAvlRG);;
 show_avl_int(tAvlRD);;
 
+let tInsert1 = insert_avl(4,tAvlRD);;
+show_avl_int(tInsert1);;
 
 
-let tAvlRGD = rooting((2, 1),
-                      rooting((-1, 2),
-                              rooting((0, 4), empty(), empty()),
-                              rooting((0, 5),
-                                      rooting((0, 6), empty(), empty()),
+
+let tAvlRGD = rooting((2, 8),
+                      rooting((-1, 3),
+                              rooting((0, 1), empty(), empty()),
+                              rooting((0, 6),
+                                      rooting((0, 4), empty(), empty()),
                                       rooting((0, 7), empty(), empty()))
                         ),
-                      rooting((0, 3), empty(), empty()))
+                      rooting((0, 10), empty(), empty()))
 ;;
 show_avl_int(tAvlRGD);;
+
+let tInsert2 = insert_avl(-4,tAvlRGD);;
+show_avl_int(tInsert2);;
 
 let tAvlRGDBis = rgd(tAvlRGD);;
 show_avl_int(tAvlRGDBis);;
 
 
-let tAvlRDG = rooting((-2, 1),
-                      rooting((0, 2), empty(), empty()),
-                      rooting((1, 3),
+let tAvlRDG = rooting((-2, 2),
+                      rooting((0, 1), empty(), empty()),
+                      rooting((1, 6),
                               rooting((0, 4),
-                                      rooting((0, 6), empty(), empty()),
-                                      rooting((0, 7), empty(), empty())),
-                              rooting((0, 5), empty(), empty())))
+                                      rooting((0, 3), empty(), empty()),
+                                      rooting((0, 5), empty(), empty())),
+                              rooting((0, 7), empty(), empty())))
 ;;
 show_avl_int(tAvlRDG);;
 
@@ -274,38 +322,3 @@ show_avl_int(tAvlRDGBis);;
 
 ;;
 
-(** A modifier et rajouter 
-
-val insert_avl 'a * 'a t_avltree -> 'a t_avltree
-val equiliber_avl 'a t_avltree -> 'a t_avltree
-
-let insert_avl(e, tree: 'a * 'a t_avltree) : 'a t_avltree =
-  match tree with
-  | B_empty -> rooting(e,empty(),empty())
-  | B_node(v,ls,rs) -> let final_tree =
-                         if (e<c)
-                         then rooting(c,insert_avl(e,ls),rs)
-                         else rooting(c,ls,insert_avl(e,rs)) in
-                       equiliber_avl(final_tree)
-
-let equiliber_avl(tree: 'a t_avltree) : 'a t_avltree =
-  match tree with
-  | B_empty -> B_empty
-  | B_node(x,ls,rs) ->
-     begin
-       match (height ls)-(height rs) with
-       | 2 ->
-          begin
-            match ls with
-            | B_node(y,ls2,rs2) when height(ls2)<height(rs2) -> rd(rooting(x,rg(ls),rs))
-            | _ -> rd tree
-          end
-       | -2 ->
-          begin
-            match rs with
-            | B_node(y,ls2,rs2) when height(ls2)>height(rs2) -> rg(rooting(x,ls,rd(rs)))
-            | _ -> rg tree
-          end
-       | _ -> tree
-     end
-       **)
