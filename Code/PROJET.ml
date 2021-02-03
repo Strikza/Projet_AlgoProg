@@ -35,16 +35,19 @@ show_int_btree(test);;
 (*=/2/============================================================================== *)
 
 let desequilibre(tree : 'a bst): int =
-  let (ls, rs) = (lson(tree), rson(tree)) in
-  if (isEmpty(ls) && isEmpty(rs))
+  if isEmpty(tree)
   then 0
   else
-    if isEmpty(ls)
-    then height(ls) - (height(rs)+1)
+    let (ls, rs) = (lson(tree), rson(tree)) in
+    if (isEmpty(ls) && isEmpty(rs))
+    then 0
     else
-      if isEmpty(rs)
-      then (height(ls)+1) - height(rs)
-      else (height(ls)+1) - (height(rs)+1)
+      if isEmpty(ls)
+      then 0 - (height(rs)+1)
+      else
+        if isEmpty(rs)
+        then (height(ls)+1)
+        else (height(ls)+1) - (height(rs)+1)
 ;;
 
 desequilibre(test);;
@@ -175,6 +178,21 @@ module Avl =
     let show_avl_int(tree : 'a avl) : unit = show((fun (h, root) -> (string_of_int h) ^ "||" ^ (string_of_int root)), tree)
     ;;
 
+    let emptyAvl(): 'a avl = empty();;
+
+    let balanceNode(tree : 'a avl): int =
+      if isEmpty(tree)
+      then 0
+      else
+        let (i, _) = root(tree) in
+        i
+    ;;
+
+    let rootNode(tree : 'a avl): 'a =
+      let (_, r) = root(tree) in
+      r
+    ;;
+    
     let rg (tree : 'a avl): 'a avl =
       if isEmpty(tree) && isEmpty(rson(tree))
       then failwith"Function: rg (rotation gauche)"
@@ -246,18 +264,58 @@ module Avl =
         end
     ;;
 
-    let rec insert_avl(e, tree: 'a * 'a avl) : 'a avl =
+    (*let rec insert_avl(e, tree: 'a * 'a avl) : 'a avl =
       if isEmpty(tree)
       then rooting((0,e), empty(), empty())
       else
-        let ((i, r), ls, rs) = (root(tree), lson(tree), rson(tree)) in
+        let ((_, r), ls, rs) = (root(tree), lson(tree), rson(tree)) in
         let final_tree =
           if e<r
-          then rooting((i+1,r), insert_avl(e,ls), rs)
-          else rooting((i-1,r), ls, insert_avl(e,rs))
+          then (*rooting((i+1,r), insert_avl(e,ls), rs)*)
+            let nls = insert_avl(e,ls) in
+            if isEmpty(rs)
+            then
+              let i = 1 in
+              rooting((i, r), nls, rs)
+            else
+              let i = abs(desequilibre(nls)) - abs(desequilibre(rs)) in
+              rooting((i, r), nls, rs)
+          else (*rooting((i-1,r), ls, insert_avl(e,rs))*)
+            if e>r
+            then
+              let nrs = insert_avl(e,rs) in
+              if isEmpty(ls)
+              then
+                let i = -1 in
+                rooting((i, r), ls, nrs)
+              else
+                let i = abs(desequilibre(ls)) - abs(desequilibre(nrs)) in
+                rooting((i, r), ls, nrs)
+            else tree
         in
         rebalance_avl(final_tree) 
-    ;;
+          ;;*)
+
+    (*let rec insert_avl(e, tree: 'a * 'a avl) : 'a avl =
+      if isEmpty(tree)
+      then rooting((0,e), empty(), empty())
+      else
+        let ((_, r), ls, rs) = (root(tree), lson(tree), rson(tree)) in
+        let final_tree =
+          if e<r
+          then
+            let nls = insert_avl(e,ls) in
+            let i = abs(desequilibre(nls)) - abs(desequilibre(rs)) in
+            rooting((i, r), nls, rs)
+          else if e>r
+          then
+            let nrs = insert_avl(e,rs) in
+            let i = abs(desequilibre(ls)) - abs(desequilibre(nrs)) in
+            rooting((i, r), ls, nrs)
+          else tree
+        in
+        rebalance_avl(final_tree) 
+    ;;*)
     
   end
 ;;
@@ -325,6 +383,13 @@ show_avl_int(tAvlRDG);;
 let tAvlRDGBis = rdg(tAvlRDG);;
 show_avl_int(tAvlRDGBis);;
 
+let myAvl : int avl = emptyAvl();;
+show_avl_int(myAvl);;
 
-;;
+show_avl_int((insert_avl(2, myAvl)));;
+show_avl_int((insert_avl(4, insert_avl(2, myAvl))));;
+show_avl_int((insert_avl(1, insert_avl(4, insert_avl(2, myAvl)))));;
+show_avl_int((insert_avl(4, insert_avl(1, insert_avl(4,insert_avl(2, myAvl))))));;
+show_avl_int((insert_avl(3, insert_avl(5, insert_avl(1, insert_avl(4, insert_avl(2, myAvl)))))));;
+
 
