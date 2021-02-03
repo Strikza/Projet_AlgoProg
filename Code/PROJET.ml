@@ -296,7 +296,7 @@ module Avl =
         rebalance_avl(final_tree) 
           ;;*)
 
-    (*let rec insert_avl(e, tree: 'a * 'a avl) : 'a avl =
+    let rec insert_avl(e, tree: 'a * 'a avl) : 'a avl =
       if isEmpty(tree)
       then rooting((0,e), empty(), empty())
       else
@@ -305,17 +305,15 @@ module Avl =
           if e<r
           then
             let nls = insert_avl(e,ls) in
-            let i = abs(desequilibre(nls)) - abs(desequilibre(rs)) in
-            rooting((i, r), nls, rs)
+            rooting((desequilibre(rooting((0, r), nls, rs)), r), nls, rs)
           else if e>r
           then
             let nrs = insert_avl(e,rs) in
-            let i = abs(desequilibre(ls)) - abs(desequilibre(nrs)) in
-            rooting((i, r), ls, nrs)
+            rooting((desequilibre(rooting((0, r), ls, nrs)), r), ls, nrs)
           else tree
         in
         rebalance_avl(final_tree) 
-    ;;*)
+    ;;
     
   end
 ;;
@@ -391,5 +389,4 @@ show_avl_int((insert_avl(4, insert_avl(2, myAvl))));;
 show_avl_int((insert_avl(1, insert_avl(4, insert_avl(2, myAvl)))));;
 show_avl_int((insert_avl(4, insert_avl(1, insert_avl(4,insert_avl(2, myAvl))))));;
 show_avl_int((insert_avl(3, insert_avl(5, insert_avl(1, insert_avl(4, insert_avl(2, myAvl)))))));;
-
-
+show_avl_int(insert_avl(7, (insert_avl(3, insert_avl(5, insert_avl(1, insert_avl(4, insert_avl(2, myAvl))))))));;
