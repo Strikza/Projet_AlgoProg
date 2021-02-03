@@ -283,7 +283,13 @@ show_avl_int(tAvlRG);;
 let tAvlRD = rd(tAvlRG);;
 show_avl_int(tAvlRD);;
 
-let tInsert1 = insert_avl(4,tAvlRD);;
+let tInsert1 = insert_avl(25,tAvlRG);;
+show_avl_int(tInsert1);;
+
+let tInsert1 = insert_avl(9,tInsert1);;
+show_avl_int(tInsert1);;
+
+let tInsert1 = insert_avl(11,tInsert1);;
 show_avl_int(tInsert1);;
 
 
