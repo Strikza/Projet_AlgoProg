@@ -1,3 +1,11 @@
+(** Authors :
+
+    - Andrianarivony Henintsoa
+    - Goubeau Samuel
+
+ **)
+
+
 #load "btree.cmo";;
 open Btree;;
 
@@ -108,9 +116,9 @@ compute_imbalance();;
 (* ********************** *)
 (* *)
 (* *)(* Calcul le déséquilibre d'une suite ordonnée à longueur fixe, croissant ou décroissant*)
-(* *)let compute_imbalanceFixedSuite(order : bool): float =
+(* *)let compute_imbalanceFixedSuite(order, nb_suite : bool*int): float =
 (* *)  let sum = ref 0.0 and
-(* *)     n = 50 in
+(* *)     n = nb_suite in
 (* *) for i=0 to n do
 (* *)    let l = fixedSuite(n, order, n) in
 (* *)    let t = bst_lbuild(l) in 
@@ -120,9 +128,9 @@ compute_imbalance();;
 (* *);;
 (* *)
 (* *)(* Calcul le déséquilibre d'une suite ordonnée à longueur variable, croissant ou décroissant*)
-(* *)let compute_imbalanceRandSuite(order : bool): float =
+(* *)let compute_imbalanceRandSuite(order, nb_suite : bool*int): float =
 (* *)  let sum = ref 0.0 and
-(* *)     n = 50 in
+(* *)     n = nb_suite in
 (* *) for i=0 to n do
 (* *)    let l = randSuite(n, order) in
 (* *)    let t = bst_lbuild(l) in 
@@ -136,10 +144,10 @@ compute_imbalance();;
 
 (* Calcul le déséquilibre d'une suite ordonnée à longueur fixe ou aléatoire, croissant ou décroissant*)
 let compute_imbalanceSuite() =
-  (compute_imbalanceFixedSuite(false) +.
-     compute_imbalanceRandSuite(true) +.
-     compute_imbalanceFixedSuite(true) +.
-     compute_imbalanceRandSuite(false))/.4.
+  (compute_imbalanceFixedSuite(false, 50) +.
+     compute_imbalanceRandSuite(true, 50) +.
+     compute_imbalanceFixedSuite(true, 50) +.
+     compute_imbalanceRandSuite(false, 50))/.4.
 ;;
 
 compute_imbalanceSuite();;
@@ -151,7 +159,8 @@ compute_imbalanceSuite();;
 
 
 
-(**----------------------------------- Exercice 2 : Arbres AVL -------------------------------------**)
+(**--------------------------------- Exercice 2 : Arbres AVL ----------------------------------**)
+
 (* Le module AVL (à compléter une fois les fonctions finies) *)
 module Avl =
   struct
@@ -184,7 +193,6 @@ module Avl =
       let (_, r) = root(tree) in
       r
     ;;
-
 
     
     (* Q.2.1.1 ============================================================================== *)
@@ -249,7 +257,7 @@ module Avl =
     (** Rééquilibrer un arbre **)
      let rebalance_avl(tree: 'a avl) : 'a avl =
       if isEmpty(tree)
-      then empty()
+      then emptyAvl()
       else
         let ((i, r), ls, rs) = (root(tree), lson(tree), rson(tree)) in
         begin
@@ -274,7 +282,7 @@ module Avl =
         end
      ;;
 
-     (* Q.2.1.3 ============================================================================== *)
+    (* Q.2.1.3 ============================================================================== *)
 
 
     (** Insersion d'un élément dans un arbre **)
@@ -345,12 +353,12 @@ module Avl =
     
   end
 ;;
-(* --------------------------------------------------------- *)
+
 
 open Avl;;
 #show Avl;;
 
-(* Zone de test du module Avl *)
+(* --- Zone de test du module Avl --- *)
 
 (* Test d'insertion et de suppression dans un Avl *)
 let avl = rooting((0,2),
@@ -425,10 +433,33 @@ let tAvlRDGBis = rdg(tAvlRDG);;
 show_avl_int(tAvlRDGBis);;
 
 
+
+(* Q.1.4 ================================================================================= *)
+
+(** Recherche d'un arbre, dans un arbre, par rapport un élément à sa racine **)
+    let rec seek_avl(e, tree: 'a * 'a avl) :'a avl =
+      let (seek1,seek2,seek3) = (bst_seek(tree, (0,e)), bst_seek(tree, (-1,e)), bst_seek(tree, (1,e))) in
+      if isEmpty(seek1)
+      then if isEmpty(seek2)
+           then seek3
+           else seek2
+      else seek1
+    ;;
+    
+(* Test de la fonction de recherche implémentant celle de bst *)
+show_avl_int(avl);;
+
+let seek1 = seek_avl(1,avl);;
+show_avl_int(seek1);;
+
+let seek2 = seek_avl(25,avl);;
+show_avl_int(seek2);;
+
+
+
 (* Q.2.2.1 ============================================================================== *)
 
-
-    (** Création d'un avl à partir d'une liste d'entiers **)
+(** Création d'un avl à partir d'une liste d'entiers **)
 let rec avl_lbuild(l : 'a list): 'a avl =
   if l = []
   then emptyAvl()
@@ -445,3 +476,124 @@ let avl_rnd_create sizeBorn =
   done;
   avl_lbuild(!l)
 ;;
+
+
+
+(* Q.2.2.2 ============================================================================== *)
+
+(** Rééquilibrer un arbre, en comptant le nombre de rotation **)
+let rebalance_avl_bis(tree, count: 'a avl * int) : 'a avl * int =
+  if isEmpty(tree)
+  then (emptyAvl(), count)
+  else
+    let ((i, r), ls, rs) = (root(tree), lson(tree), rson(tree)) in
+    begin
+      match i with
+      | 2 ->
+         let ((i_L, r_L), ls_L, rs_L) = (root(ls), lson(ls), rson(ls)) in
+         begin
+           match i_L with
+           | -1 -> (rgd(tree), count+2)
+           | 1 -> (rd(tree), count+1)
+           | _ -> (tree, count)
+         end
+      | -2 ->
+         let ((i_R, r_R), ls_R, rs_R) = (root(rs), lson(rs), rson(rs)) in
+         begin
+           match i_R with
+               | 1 -> (rdg(tree), count+2)
+               | -1 -> (rg(tree), count+1)
+               | _ -> (tree, count)
+         end
+      | _ -> (tree, count)
+    end
+;;
+
+
+(** Insersion d'un élément dans un arbre, en comptant le nombre de rotation **)
+let rec insert_avl_bis(e, tree, count: 'a * 'a avl * int) : 'a avl * int =
+  if isEmpty(tree)
+  then (rooting((0,e), empty(), empty()), count)
+  else
+    let ((_, r), ls, rs) = (root(tree), lson(tree), rson(tree)) and
+        countBis = ref count in
+    let final_tree =
+      if e<r
+      then
+        let (nls, countTmp) = insert_avl_bis(e,ls, count) in
+        countBis := countTmp;
+        rooting((desequilibre(rooting((0, r), nls, rs)), r), nls, rs)
+      else if e>r
+      then
+        let (nrs, countTmp) = insert_avl_bis(e, rs, count) in
+        countBis := countTmp;
+        rooting((desequilibre(rooting((0, r), ls, nrs)), r), ls, nrs)
+      else tree
+    in
+    rebalance_avl_bis(final_tree, !countBis)
+;;
+
+(** Création d'un avl à partir d'une liste d'entiers, , en comptant le nombre de rotation **)
+let rec avl_lbuild_bis(l, count : 'a list * int): 'a avl * int =
+  if l = []
+  then (emptyAvl(), count)
+  else
+    let (treetmp, counttmp) = avl_lbuild_bis(tl(l), count) in
+    insert_avl_bis(hd(l), treetmp, counttmp)
+;;
+
+(* Test des fonctions avec un compteur : *)
+
+(* avec insert_avl *)
+let a0 = emptyAvl();;
+show_avl_int(a0);;
+let (a1, count1) = insert_avl_bis(1, a0, 0);;
+show_avl_int(a1);;
+let (a2, count2) = insert_avl_bis(2, a1, count1);;
+show_avl_int(a2);;
+let (a3, count3) = insert_avl_bis(3, a2, count2);;
+show_avl_int(a3);;
+let (a4, count4) = insert_avl_bis(4, a3, count3);;
+show_avl_int(a4);;
+let (a5, count5) = insert_avl_bis(5, a4, count4);;
+show_avl_int(a5);;
+(* avec avl_lbuild *)
+let (a6, count6) = avl_lbuild_bis([1;2;3;4;5], 0);;
+show_avl_int(a6);;
+let (a7, count7) = avl_lbuild_bis([1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;18;19;20], 0);;
+show_avl_int(a7);;
+
+
+(** Calcul la rotation moyenne pour la création d'un Avl avec des listes (sous suite fixe) **)
+let average_rotation_fixed_suite(order, nb_tree : bool*int): float =
+  let nb_rota = ref 0.0 in
+  for i=0 to nb_tree do
+    let l = fixedSuite(200, order, 10) in
+    let (_, count) = avl_lbuild_bis(l, 0) in 
+    nb_rota := !nb_rota +. float_of_int(count);
+   done;
+  !nb_rota/.float_of_int(nb_tree)
+;;
+
+(** Calcul la rotation moyenne pour la création d'un Avl avec des listes (sous suite non-fixe) **)
+let average_rotation_rand_suite(order, nb_tree : bool*int): float =
+  let nb_rota = ref 0.0 in
+  for i=0 to nb_tree do
+    let l = randSuite(200, order) in
+    let (_, count) = avl_lbuild_bis(l, 0) in 
+    nb_rota := !nb_rota +. float_of_int(count);
+  done;
+  !nb_rota/.float_of_int(nb_tree)
+;;
+
+(** Calcul la rotation moyenne pour la création d'un Avl avec des listes **)
+let average_rotation_suite() =
+  (average_rotation_fixed_suite(true, 50)+.
+   average_rotation_fixed_suite(false, 50)+.
+   average_rotation_rand_suite(true, 50)+.
+   average_rotation_rand_suite(false, 50))/.4.
+;;
+
+average_rotation_suite();;
+(*  On obtient en résultat une moyenne d'environ 122 rotations par avl construit *)
+(* avec ce type de liste                                                         *)
