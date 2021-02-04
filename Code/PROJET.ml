@@ -174,12 +174,20 @@ compute_imbalanceSuite();;
 module Avl =
   struct
     type 'a avl = (int*'a) bst;;
+    (** L'entier ici sert à stocker le déséquilibre **)
 
-    let show_avl_int(tree : 'a avl) : unit = show((fun (h, root) -> (string_of_int h) ^ "||" ^ (string_of_int root)), tree)
+    
+    (** Afficher un avl**)
+    let show_avl_int(tree : 'a avl) : unit =
+      show((fun (h, root) -> (string_of_int h) ^ "||" ^ (string_of_int root)), tree)
     ;;
 
+    
+    (** Créer un avl vide **)
     let emptyAvl(): 'a avl = empty();;
 
+
+    (** Acceder à la valeur de déséquilibre d'un noeud d'un arbre **)
     let balanceNode(tree : 'a avl): int =
       if isEmpty(tree)
       then 0
@@ -188,11 +196,19 @@ module Avl =
         i
     ;;
 
+
+    (** Acceder à la valeur d'un noeud d'un arbre **)
     let rootNode(tree : 'a avl): 'a =
       let (_, r) = root(tree) in
       r
     ;;
+
+
     
+    (* Q.2.1.1 ============================================================================== *)
+
+
+    (** Effectuer une rotation gauche sur un arbre **)
     let rg (tree : 'a avl): 'a avl =
       if isEmpty(tree) && isEmpty(rson(tree))
       then failwith"Function: rg (rotation gauche)"
@@ -208,6 +224,8 @@ module Avl =
         rooting((ni, rR), rooting((niR, r), ls, lsR), rsR)
     ;;
 
+
+    (** Effectuer une rotation droite sur un arbre **)
     let rd (tree: 'a avl) : 'a avl =
       if isEmpty(tree) && isEmpty(lson(tree))
       then failwith"Function: rd (rotation droite)"
@@ -223,6 +241,8 @@ module Avl =
         rooting((ni, rL), lsL, rooting((niL, r), rsL, rs))
     ;;
 
+    
+    (** Effectuer une rotation gauche-droite sur un arbre **)
     let rgd (tree: 'a avl) : 'a avl =
       if isEmpty(tree) && isEmpty(lson(tree)) && isEmpty(lson(rson(tree)))
       then failwith"Function: rgd (rotation gauche-droite)"
@@ -231,6 +251,8 @@ module Avl =
         rd(rooting((h, r), rg(ls), rs))
     ;;
 
+
+    (** Effectuer une rotation droite-gauche sur un arbre **)
     let rdg (tree: 'a avl) : 'a avl =
       if isEmpty(tree) && isEmpty(rson(tree)) && isEmpty(rson(lson(tree)))
       then failwith"Function: rgd (rotation droite-gauche)"
@@ -238,7 +260,11 @@ module Avl =
         let ((h, r), ls, rs) = (root(tree), lson(tree), rson(tree)) in
         rg(rooting((h, r), ls, rd(rs)))
     ;;
-    
+
+    (* Q.2.1.2 ============================================================================== *)
+
+
+    (** Rééquilibrer un arbre **)
      let rebalance_avl(tree: 'a avl) : 'a avl =
       if isEmpty(tree)
       then empty()
@@ -252,8 +278,7 @@ module Avl =
                match i_L with
                | -1 -> rgd(tree)
                | 1 -> rd(tree)
-               | 0 -> rg(tree)
-               | _ -> rooting((desequilibre(rooting((i,r), ls, rs)),r),ls,rs)
+               | _ -> tree
              end
           | -2 ->
              let ((i_R, r_R), ls_R, rs_R) = (root(rs), lson(rs), rson(rs)) in
@@ -261,13 +286,16 @@ module Avl =
                match i_R with
                | 1 -> rdg(tree)
                | -1 -> rg(tree)
-               | 0 -> rd(tree)
-               | _ -> rooting((desequilibre(rooting((i,r), ls, rs)),r),ls,rs)
+               | _ -> tree
              end
           | _ -> rooting((desequilibre(rooting((i,r), ls, rs)),r),ls,rs)
         end
-    ;;
+     ;;
 
+     (* Q.2.1.3 ============================================================================== *)
+
+
+    (** Insersion d'un élément dans un arbre **)
     let rec insert_avl(e, tree: 'a * 'a avl) : 'a avl =
       if isEmpty(tree)
       then rooting((0,e), empty(), empty())
@@ -287,6 +315,8 @@ module Avl =
         rebalance_avl(final_tree) 
     ;;
 
+
+    (** Recherche de l'élément maximum dans un arbre **)
     let rec max(tree: 'a avl) : 'a =
       if isEmpty(tree)
       then failwith"Function: rgd (rotation gauche-droite)"
@@ -298,6 +328,8 @@ module Avl =
           max(rs)
     ;;
 
+
+    (** Suppression de l'élément maximum d'un arbre **)
     let rec dmax(tree: 'a avl) : 'a avl =
        if isEmpty(tree)
       then failwith"Function: rgd (rotation gauche-droite)"
@@ -308,7 +340,9 @@ module Avl =
         else
           rebalance_avl(rooting((d,r),ls,dmax(rs)))
     ;;
+    
 
+    (** Suppression d'un élément d'un arbre **)
     let rec suppr_avl(e, tree : 'a * 'a avl): 'a avl =
       if isEmpty(tree)
       then emptyAvl()
@@ -326,6 +360,27 @@ module Avl =
           then rs
           else ls
     ;;
+
+    (* Q.2.2.1 ============================================================================== *)
+
+
+    (** Création d'un avl à partir d'une liste d'entiers **)
+    let rec avl_lbuild(l : 'a list): 'a avl =
+      if l = []
+      then emptyAvl()
+      else insert_avl(hd(l), avl_lbuild(tl(l)))
+    ;;
+    
+
+    (** Génération d'un avl à partir de liste d'entiers aléatoires **)
+    let avl_rnd_create sizeBorn =
+      Random.self_init();
+      let l  = ref [] and size = Random.int(sizeBorn) in
+      for i=0 to size do
+        l := Random.int(100)::(!l);
+      done;
+      avl_lbuild(!l)
+    ;;
          
     
   end
@@ -337,7 +392,31 @@ open Avl;;
 
 (* Zone de test *)
 
-let tAvlGD = rooting((-1, 2),
+let avl = rooting((0,2),
+                  rooting((0,1), empty(), empty()),
+                  rooting((0,3), empty(), empty()))
+;;
+show_avl_int(avl);;
+
+let avl = insert_avl(-1,avl);;
+show_avl_int(avl);;
+
+let avl = insert_avl(7,avl);;
+show_avl_int(avl);;
+
+let avl = insert_avl(25,avl);;
+show_avl_int(avl);;
+
+let avl = dmax(avl);;
+show_avl_int(avl);;
+
+let avl = suppr_avl(2,avl);;
+show_avl_int(avl);;
+
+let avl = suppr_avl(10,avl);;
+show_avl_int(avl);;
+
+zlet tAvlGD = rooting((-1, 2),
                   rooting((0, 1), empty(), empty()),
                   rooting((0, 4),
                           rooting((0, 3), empty(), empty()),
