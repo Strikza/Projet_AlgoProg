@@ -16,7 +16,7 @@ open Random;;
 
 (**--------------------------- Exercice 1 : Arbres Binaires de Recherche ---------------------------**)
 
-(*=/1/============================================================================== *)
+(* Q.1.1 ============================================================================== *)
 
 let bst_rnd_create sizeBorn =
   Random.self_init();
@@ -32,25 +32,7 @@ let test = bst_rnd_create(20);;
 show_int_btree(test);;
 
 
-(*=/2/============================================================================== *)
-
-let desequilibre(tree : 'a bst): int =
-  if isEmpty(tree)
-  then 0
-  else
-    let (ls, rs) = (lson(tree), rson(tree)) in
-    if (isEmpty(ls) && isEmpty(rs))
-    then 0
-    else
-      if isEmpty(ls)
-      then 0 - (height(rs)+1)
-      else
-        if isEmpty(rs)
-        then (height(ls)+1)
-        else (height(ls)+1) - (height(rs)+1)
-;;
-
-desequilibre(test);;
+(* Q.1.2 ============================================================================== *)
 
 let compute_imbalance() =
   let sum = ref 0.0 and
@@ -63,12 +45,12 @@ let compute_imbalance() =
 ;;
 
 compute_imbalance();;
-(*  On remarque ici que lorsqu'on lance plusieurs fois la fonction, le *)
-(* résultat est presque systémtiquement le même, soit environ 0.       *)
+(*  On remarque ici que lorsqu'on lance plusieurs fois la fonction, le          *)
+(* résultat obtenu est (presque) systémtiquement le même, soit environ 0.       *)
 
 
 
-(*=/3/============================================================================== *)
+(* Q.1.3 ============================================================================== *)
 
 
 (* *** Sous-fonctions *** *)
@@ -174,7 +156,7 @@ compute_imbalanceSuite();;
 module Avl =
   struct
     type 'a avl = (int*'a) bst;;
-    (** L'entier ici sert à stocker le déséquilibre **)
+    (** L'entier ici sert à stocker le déséquilibre de l'arbre**)
 
     
     (** Afficher un avl**)
@@ -359,29 +341,7 @@ module Avl =
           else if not(isEmpty(rs))
           then rs
           else ls
-    ;;
-
-    (* Q.2.2.1 ============================================================================== *)
-
-
-    (** Création d'un avl à partir d'une liste d'entiers **)
-    let rec avl_lbuild(l : 'a list): 'a avl =
-      if l = []
-      then emptyAvl()
-      else insert_avl(hd(l), avl_lbuild(tl(l)))
-    ;;
-    
-
-    (** Génération d'un avl à partir de liste d'entiers aléatoires **)
-    let avl_rnd_create sizeBorn =
-      Random.self_init();
-      let l  = ref [] and size = Random.int(sizeBorn) in
-      for i=0 to size do
-        l := Random.int(100)::(!l);
-      done;
-      avl_lbuild(!l)
-    ;;
-         
+    ;;   
     
   end
 ;;
@@ -390,8 +350,9 @@ module Avl =
 open Avl;;
 #show Avl;;
 
-(* Zone de test *)
+(* Zone de test du module Avl *)
 
+(* Test d'insertion et de suppression dans un Avl *)
 let avl = rooting((0,2),
                   rooting((0,1), empty(), empty()),
                   rooting((0,3), empty(), empty()))
@@ -416,37 +377,24 @@ show_avl_int(avl);;
 let avl = suppr_avl(10,avl);;
 show_avl_int(avl);;
 
-zlet tAvlGD = rooting((-1, 2),
+
+(* Test des rotations gauche et droite *)
+let tAvl = rooting((-1, 2),
                   rooting((0, 1), empty(), empty()),
                   rooting((0, 4),
                           rooting((0, 3), empty(), empty()),
                           rooting((0, 5), empty(), empty())))
 ;;
-show_avl_int(tAvlGD);;
+show_avl_int(tAvl);;
 
-let t = dmax(tAvlGD);;
-show_avl_int(t);;
-
-let tAvlRG = rg(tAvlGD);;
+let tAvlRG = rg(tAvl);;
 show_avl_int(tAvlRG);;
 
 let tAvlRD = rd(tAvlRG);;
 show_avl_int(tAvlRD);;
 
-let tInsert1 = insert_avl(25,tAvlRG);;
-show_avl_int(tInsert1);;
 
-let tInsert1 = insert_avl(9,tInsert1);;
-show_avl_int(tInsert1);;
-
-let tInsert1 = insert_avl(11,tInsert1);;
-show_avl_int(tInsert1);;
-
-let oui = dmax(tInsert1);;
-show_avl_int(oui);;
-
-
-
+(* Test d'une rotation gauche-droite *)
 let tAvlRGD = rooting((2, 8),
                       rooting((-1, 3),
                               rooting((0, 1), empty(), empty()),
@@ -461,12 +409,8 @@ show_avl_int(tAvlRGD);;
 let tAvlRGDBis = rgd(tAvlRGD);;
 show_avl_int(tAvlRGDBis);;
 
-let tInsert2 = insert_avl(-4,tAvlRGDBis);;
-show_avl_int(tInsert2);;
 
-let dmax
-
-
+(* Test d'une rotation droite-gauche *)
 let tAvlRDG = rooting((-2, 2),
                       rooting((0, 1), empty(), empty()),
                       rooting((1, 6),
@@ -477,24 +421,27 @@ let tAvlRDG = rooting((-2, 2),
 ;;
 show_avl_int(tAvlRDG);;
 
-let t1 = dmax(tAvlRDG);;
-show_avl_int(t1);;
-
-let t2 = suppr_avl(4, tAvlRDG);;
-show_avl_int(t2);;
-
-
-
 let tAvlRDGBis = rdg(tAvlRDG);;
 show_avl_int(tAvlRDGBis);;
 
-let myAvl : int avl = emptyAvl();;
-show_avl_int(myAvl);;
 
-show_avl_int((insert_avl(2, myAvl)));;
-show_avl_int((insert_avl(4, insert_avl(2, myAvl))));;
-show_avl_int((insert_avl(1, insert_avl(4, insert_avl(2, myAvl)))));;
-show_avl_int((insert_avl(4, insert_avl(1, insert_avl(4,insert_avl(2, myAvl))))));;
-show_avl_int((insert_avl(3, insert_avl(5, insert_avl(1, insert_avl(4, insert_avl(2, myAvl)))))));;
-show_avl_int(insert_avl(7, (insert_avl(3, insert_avl(5, insert_avl(1, insert_avl(4, insert_avl(2, myAvl))))))));;
+(* Q.2.2.1 ============================================================================== *)
 
+
+    (** Création d'un avl à partir d'une liste d'entiers **)
+let rec avl_lbuild(l : 'a list): 'a avl =
+  if l = []
+  then emptyAvl()
+  else insert_avl(hd(l), avl_lbuild(tl(l)))
+;;
+
+
+(** Génération d'un avl à partir de liste d'entiers aléatoires **)
+let avl_rnd_create sizeBorn =
+  Random.self_init();
+  let l  = ref [] and size = Random.int(sizeBorn) in
+  for i=0 to size do
+    l := Random.int(100)::(!l);
+  done;
+  avl_lbuild(!l)
+;;

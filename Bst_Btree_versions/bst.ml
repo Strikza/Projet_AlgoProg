@@ -53,5 +53,22 @@ module Bst =
         else
           1 + max2(height(ls), height(rs))
     ;;
+
+    let desequilibre(tree : 'a bst): int =
+      if isEmpty(tree)
+      then 0
+      else
+        let (ls, rs) = (lson(tree), rson(tree)) in
+        if (isEmpty(ls) && isEmpty(rs))
+        then 0
+        else
+          if isEmpty(ls)
+          then 0 - (height(rs)+1)
+          else
+            if isEmpty(rs)
+            then (height(ls)+1)
+            else (height(ls)+1) - (height(rs)+1)
+    ;;
+    
   end
 ;;
