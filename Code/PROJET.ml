@@ -197,14 +197,15 @@ module Avl =
       if isEmpty(tree) && isEmpty(rson(tree))
       then failwith"Function: rg (rotation gauche)"
       else
-        let ((h, r), ls, rs) = (root(tree), lson(tree), rson(tree)) in
-        let ((hR, rR), lsR, rsR) = (root(rs), lson(rs), rson(rs)) in
-        let (nh, nhR) =
-          if hR = 0
-          then (-1, 1)
-          else (0, 0)
+        let ((i, r), ls, rs) = (root(tree), lson(tree), rson(tree)) in
+        let ((iR, rR), lsR, rsR) = (root(rs), lson(rs), rson(rs)) in
+        let (ni, niR) =
+          (
+            desequilibre(rooting((0, rR), rooting((0, r), ls, lsR), rsR)),
+            desequilibre(rooting((0, r), ls, lsR))
+          )
         in
-        rooting((nhR, rR), rooting((nh, r), ls, lsR), rsR)
+        rooting((ni, rR), rooting((niR, r), ls, lsR), rsR)
     ;;
 
     let rd (tree: 'a avl) : 'a avl =
@@ -213,12 +214,13 @@ module Avl =
       else
         let ((h, r), ls, rs) = (root(tree), lson(tree), rson(tree)) in
         let ((hL, rL), lsL, rsL) = (root(ls), lson(ls), rson(ls)) in
-        let (nh, nhL) =
-          if hL = 0
-          then (1, -1)
-          else (0, 0)
+        let (ni, niL) =
+          (
+            desequilibre(rooting((0, rL), lsL, rooting((0, r), rsL, rs))),
+            desequilibre(rooting((0, r), rsL, rs))
+          )
         in
-        rooting((nhL, rL), lsL, rooting((nh, r), rsL, rs))
+        rooting((ni, rL), lsL, rooting((niL, r), rsL, rs))
     ;;
 
     let rgd (tree: 'a avl) : 'a avl =
@@ -262,10 +264,7 @@ module Avl =
                | 0 -> rd(tree)
                | _ -> rooting((desequilibre(rooting((i,r), ls, rs)),r),ls,rs)
              end
-          | _ ->
-             if (i=0||i=(-1)||i=1)
-             then tree
-             else failwith"DEBUG"     
+          | _ -> rooting((desequilibre(rooting((i,r), ls, rs)),r),ls,rs)
         end
     ;;
 
@@ -364,6 +363,9 @@ show_avl_int(tInsert1);;
 let tInsert1 = insert_avl(11,tInsert1);;
 show_avl_int(tInsert1);;
 
+let oui = dmax(tInsert1);;
+show_avl_int(oui);;
+
 
 
 let tAvlRGD = rooting((2, 8),
@@ -377,11 +379,13 @@ let tAvlRGD = rooting((2, 8),
 ;;
 show_avl_int(tAvlRGD);;
 
-let tInsert2 = insert_avl(-4,tAvlRGD);;
-show_avl_int(tInsert2);;
-
 let tAvlRGDBis = rgd(tAvlRGD);;
 show_avl_int(tAvlRGDBis);;
+
+let tInsert2 = insert_avl(-4,tAvlRGDBis);;
+show_avl_int(tInsert2);;
+
+let dmax
 
 
 let tAvlRDG = rooting((-2, 2),
