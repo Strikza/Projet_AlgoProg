@@ -201,7 +201,7 @@ module Avl =
         let ((hR, rR), lsR, rsR) = (root(rs), lson(rs), rson(rs)) in
         let (nh, nhR) =
           if hR = 0
-          then (0, 1)
+          then (1, -1)
           else (0, 0)
         in
         rooting((nhR, rR), rooting((nh, r), ls, lsR), rsR)
@@ -215,7 +215,7 @@ module Avl =
         let ((hL, rL), lsL, rsL) = (root(ls), lson(ls), rson(ls)) in
         let (nh, nhL) =
           if hL = 0
-          then (0, -1)
+          then (-1, 1)
           else (0, 0)
         in
         rooting((nhL, rL), lsL, rooting((nh, r), rsL, rs))
@@ -250,7 +250,8 @@ module Avl =
                match i_L with
                | -1 -> rgd(tree)
                | 1 -> rd(tree)
-               | _ -> failwith"DEBUG : rebalance_avl function"
+               | 0 -> rd(tree)
+               | _ -> failwith"DEBUG 1 : rebalance_avl function"
              end
           | -2 ->
              let ((i_R, r_R), ls_R, rs_R) = (root(rs), lson(rs), rson(rs)) in
@@ -258,9 +259,10 @@ module Avl =
                match i_R with
                | 1 -> rdg(tree)
                | -1 -> rg(tree)
-               | _ -> failwith"DEBUG : rebalance_avl function"
+               | 0 -> rg(tree)
+               | _ -> failwith"DEBUG 2 : rebalance_avl function"
              end
-          | _ -> tree
+          | _ -> rooting((desequilibre(rooting((i,r), ls, rs)),r),ls,rs)
         end
     ;;
 
@@ -303,6 +305,24 @@ module Avl =
         then ls
         else
           rebalance_avl(rooting((d,r),ls,dmax(rs)))
+    ;;
+
+    let rec suppr_avl(e, tree : 'a * 'a avl): 'a avl =
+      if isEmpty(tree)
+      then emptyAvl()
+      else
+        let ((i, r), ls, rs) = (root(tree), lson(tree), rson(tree)) in
+        if e<r
+        then rebalance_avl(rooting((i, r), suppr_avl(e, ls), rs))
+        else if e>r
+        then rebalance_avl(rooting((i, r), ls, suppr_avl(e, rs)))
+        else
+          if not(isEmpty(ls)) && not(isEmpty(rs))
+          then
+            rebalance_avl(rooting((i, max(ls)), dmax(ls), rs))
+          else if not(isEmpty(rs))
+          then rs
+          else ls
     ;;
          
     
@@ -373,6 +393,9 @@ show_avl_int(tAvlRDG);;
 
 let t1 = dmax(tAvlRDG);;
 show_avl_int(t1);;
+
+let t2 = suppr_avl(4, tAvlRDG);;
+show_avl_int(t2);;
 
 
 
