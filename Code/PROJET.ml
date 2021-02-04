@@ -201,7 +201,7 @@ module Avl =
         let ((hR, rR), lsR, rsR) = (root(rs), lson(rs), rson(rs)) in
         let (nh, nhR) =
           if hR = 0
-          then (1, -1)
+          then (-1, 1)
           else (0, 0)
         in
         rooting((nhR, rR), rooting((nh, r), ls, lsR), rsR)
@@ -215,7 +215,7 @@ module Avl =
         let ((hL, rL), lsL, rsL) = (root(ls), lson(ls), rson(ls)) in
         let (nh, nhL) =
           if hL = 0
-          then (-1, 1)
+          then (1, -1)
           else (0, 0)
         in
         rooting((nhL, rL), lsL, rooting((nh, r), rsL, rs))
@@ -250,8 +250,8 @@ module Avl =
                match i_L with
                | -1 -> rgd(tree)
                | 1 -> rd(tree)
-               | 0 -> rd(tree)
-               | _ -> failwith"DEBUG 1 : rebalance_avl function"
+               | 0 -> rg(tree)
+               | _ -> rooting((desequilibre(rooting((i,r), ls, rs)),r),ls,rs)
              end
           | -2 ->
              let ((i_R, r_R), ls_R, rs_R) = (root(rs), lson(rs), rson(rs)) in
@@ -259,10 +259,13 @@ module Avl =
                match i_R with
                | 1 -> rdg(tree)
                | -1 -> rg(tree)
-               | 0 -> rg(tree)
-               | _ -> failwith"DEBUG 2 : rebalance_avl function"
+               | 0 -> rd(tree)
+               | _ -> rooting((desequilibre(rooting((i,r), ls, rs)),r),ls,rs)
              end
-          | _ -> rooting((desequilibre(rooting((i,r), ls, rs)),r),ls,rs)
+          | _ ->
+             if (i=0||i=(-1)||i=1)
+             then tree
+             else failwith"DEBUG"     
         end
     ;;
 
