@@ -5,6 +5,12 @@
 
  **)
 
+(**
+    Pour le module Bst, nous n'avons que 2 versions d'ocaml,
+   donc il y a de forte chance qu'il faille compiler bst.ml
+   si vous n'avez pas l'une des 2 versions déjà présente
+ **)
+
 
 #load "btree.cmo";;
 open Btree;;
@@ -568,7 +574,7 @@ show_avl_int(a7);;
 let average_rotation_fixed_suite(order, nb_tree : bool*int): float =
   let nb_rota = ref 0.0 in
   for i=0 to nb_tree do
-    let l = fixedSuite(200, order, 10) in
+    let l = fixedSuite(300, order, 10) in
     let (_, count) = avl_lbuild_bis(l, 0) in 
     nb_rota := !nb_rota +. float_of_int(count);
    done;
